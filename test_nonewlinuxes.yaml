@@ -1,0 +1,17 @@
+- name: purging them
+  collections:
+    - "ibm.zvm_ansible"
+  hosts: newlinuxes
+  tasks: 
+  - name: killem
+    zvm_startstop_user:
+      name: '{{ name }}'
+      loggedon: false
+      viaSMAPI: false
+      stoptime: 3
+  - name: del from directory
+    zvm_user:
+      name: '{{ name }}'
+      erasemode: "2"
+      exists: false
+

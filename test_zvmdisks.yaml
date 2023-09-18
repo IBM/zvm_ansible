@@ -1,0 +1,62 @@
+- name: verify dasd management 
+  collections:
+    - "ibm.zvm_ansible"
+  hosts: zvmhosts
+  tasks:
+  - name: run adddasd
+    zvm_minidisk:
+      name: litstsm
+      diskaddr: 2020
+      disktype: 3390
+      diskalloc: AUTOG
+      diskloc: EAVPOOL
+      diskunits: 1
+      #disksize: 149808
+      disksize: 10016
+      diskmode: MR
+      diskformat: True
+      exists: True
+    register: testout 
+  - name: run adddasd again should get already exists
+    zvm_minidisk:
+      name: litstsm
+      diskaddr: 2020
+      disktype: 3390
+      diskalloc: AUTOG
+      diskloc: EAVPOOL
+      diskunits: 1
+      disksize: 10016
+      diskmode: MR
+      diskformat: True
+      exists: True
+    register: testout2 
+  - name: run clonedisk against existing disk and it copies over it
+    zvm_clone_disk:
+      name: litstsm
+      diskaddr: 2020
+      srcname: RHEL81
+      srcaddr: 201
+    register: clonedisk
+  - name: run adddasd delete
+    zvm_minidisk:
+      name: litstsm
+      diskaddr: 2020
+      diskwipe: 2
+      exists: False
+    register: testdel
+  - name: run adddasd delete again should get doesnt exist
+    zvm_minidisk:
+      name: litstsm
+      diskaddr: 2020
+      exists: False
+    register: testdel2 
+  - name: run clonedisk again
+    zvm_clone_disk:
+      name: litstsm
+      diskaddr: 2020
+      srcname: RHEL81
+      srcaddr: 201
+      diskalloc: AUTOG
+      diskloc: EAVPOOL
+      diskmode: MR
+    register: clonedisk

@@ -1,0 +1,38 @@
+- name: jays module
+  hosts: vma
+  tasks:
+  - name: run module args 1
+    zvmuser:
+      name: thingone
+      newpass: AUTOONLY
+      prototype: LITMSTC
+      exists: true
+    register: testout 
+  - name: run module args 2
+    zvmuser:
+      name: baddude
+      prototype: ISNTONE
+      exists: true
+    register: test2out 
+    ignore_errors: true
+  - name: run module args 3
+    zvmuser:
+      name: thingone
+      prototype: LITMSTC
+      exists: true
+    register: test3out 
+  - name: resize one
+    zvmupduser:
+      name: thingone
+      newpass: letmein
+      vcpus: 4
+      vcputype: IFL
+      maxcpus: 12
+      mem: 20
+      maxmem: 30
+      memsuffix: G
+  - name: run module args 4
+    zvmuser:
+      name: thingone
+      exists: false
+    register: test4out 

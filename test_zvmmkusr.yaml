@@ -1,0 +1,50 @@
+- name: makin users
+  hosts: vma
+  tasks:
+  - name: run module args 1
+    zvm_user:
+      name: thingone
+      newpass: AUTOONLY
+      prototype: LITMSTC
+      exists: true
+    register: testout 
+  - name: run module args 2
+    zvm_user:
+      name: baddude
+      prototype: ISNTONE
+      exists: true
+    register: test2out 
+    ignore_errors: true
+  - name: run module args 3
+    zvm_user:
+      name: thingone
+      prototype: LITMSTC
+      exists: true
+    register: test3out 
+  - name: resize one
+    zvm_update_user:
+      name: thingone
+      newpass: letmein
+      vcpus: 4
+      vcputype: IFL
+      maxcpus: 12
+      mem: 20
+      maxmem: 30
+      memsuffix: G
+  - name: run module args 4
+    zvm_user:
+      name: thingone
+      exists: false
+    register: test4out 
+- name: making users with dir stubs
+  hosts: newlinuxes
+  tasks: 
+  - name: make dir files
+    template:
+      src: dirstub.j2
+      dest: /tmp/{{ name }}.direct
+  - name: add to directory
+    zvm_user:
+      name: '{{ name }}'
+      dirfile: /tmp/{{ name }}.direct
+      exists: true

@@ -1,0 +1,51 @@
+all:
+    hosts:
+    vars:
+        domain: fpet.pokprv.stglabs.ibm.com
+        nicdev: "900"
+        nicl2: 1
+        vswname: 10dotlan
+        vlan: 1284
+        subnet: default
+        netmask: 255.255.255.0
+        gateway: 1.2.3.1
+        dns1: 1.1.1.1
+        dns2: 9.9.9.9
+    children:
+        zvmhosts:      
+            hosts: 
+                mapvma.fpet.pokprv.stglabs.ibm.com:
+                    ansible_user: root
+        newlinuxes:
+            hosts:
+                jtu0000.fpet.pokprv.stglabs.ibm.com:
+                    ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
+                    ansible_user: root 
+                    name: jtu000 
+                    newpass: autoonly 
+                    defmem: 3 
+                    maxmem: 4 
+                    sbymem: 1 
+                    topcpu: 1 
+                    nicdev: "500"
+                    ipaddr: 1.2.3.4
+                jtu0001.fpet.pokprv.stglabs.ibm.com:
+                    ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
+                    ansible_user: root 
+                    name: jtu001
+                    newpass: autoonly
+                    defmem: 9
+                    maxmem: 40
+                    sbymem: 31
+                    topcpu: 3
+                    ipaddr: 1.2.3.5
+                jtu0002.fpet.pokprv.stglabs.ibm.com:
+                    ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
+                    ansible_user: root
+                    name: jtu002
+                    newpass: autoonly
+                    defmem: 3
+                    maxmem: 9
+                    sbymem: 6
+                    topcpu: 7
+                    ipaddr: 1.2.3.6

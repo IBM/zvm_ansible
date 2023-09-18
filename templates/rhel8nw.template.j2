@@ -1,0 +1,49 @@
+#!/bin/bash
+
+rm -f /etc/udev/rules.d/*qeth*
+rm -f /etc/udev/rules.d/*persistent-net*
+rm -f /etc/sysconfig/network-scripts/*enc*
+rm -f /etc/ssh/ssh_host* 
+
+cat << EOF > /etc/udev/rules.d/70-persistent-net.rules
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="qeth", ATTR{dev_id}=="0x0", KERNELS=="0.0.{{ nicdev.rjust(4,"0") }}", ATTR{type}=="1", KERNEL=="eth*", NAME="enc{{ nicdev }}"
+EOF
+
+systemctl restart sshd &
+
+chzdev qeth 0.0.{{ nicdev }} layer2={{ nicl2 }} online=1 -e -ap -y 
+
+cat << EOF > /etc/sysconfig/network-scripts/ifcfg-enc{{ nicdev }}
+NAME="enc{{ nicdev }}"
+SUBCHANNELS="0.0.{{ nicdev.rjust(4,"0")[0:-1]  }}0,0.0.{{ nicdev.rjust(4,"0")[0:-1] }}1,0.0.{{ nicdev.rjust(4,"0")[0:-1] }}2"
+NETTYPE="qeth"
+OPTIONS="layer2={{ nicl2 }}"
+DEVICE="enc{{ nicdev }}"
+ONBOOT=yes
+NETBOOT=yes
+BOOTPROTO=static
+NM_CONTROLLED="yes"
+IPADDR="{{ ipaddr }}"
+NETMASK="{{ netmask }}"
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_FAILURE_FATAL=no
+TYPE=Ethernet
+EOF
+
+cat << EOF > /etc/sysconfig/network-scripts/route-enc{{ nicdev }}
+{{ subnet }} via {{ gateway }} dev enc{{ nicdev }}
+EOF
+
+ifup enc{{ nicdev }}
+
+cat << EOF > /etc/resolv.conf
+nameserver {{ dns1 }}
+nameserver {{ dns2 }}
+search {{ domain }}
+EOF
+
+echo "{{ name }}.{{ domain }}" > /etc/hostname
+hostname -F /etc/hostname
+subscription-manager clean
+reboot

@@ -1,0 +1,8 @@
+USER {{ name }} {{ newpass }} {{ defmem }}G {{ maxmem }}G G
+INCLUDE LITPRO
+COMMAND DEFINE CPU 0-{{ topcpu }} TYPE IFL
+COMMAND DEFINE STORAGE {{ defmem }}G STANDBY {{ sbymem }}G
+IPL ZCMS
+MACHINE Z 16
+NICDEF {{ nicdev }} TYPE QDIO LAN SYSTEM {{ vswname }} 
+NICDEF {{ nicdev }} VLAN {{ vlan }} 

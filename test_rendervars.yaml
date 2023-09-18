@@ -1,0 +1,7 @@
+- name: jays module
+  hosts: newsys1
+  tasks:
+  - name: template a directory file
+    template: 
+      src: dirstub.j2
+      dest: /tmp/dirstub.direct

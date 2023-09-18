@@ -1,0 +1,71 @@
+- name: making users with dir stubs
+  collections:
+    - "ibm.zvm_ansible"
+  hosts: newlinuxes
+  tasks: 
+  - name: make dir files
+    template:
+      src: dirstub.j2
+      dest: /tmp/{{ name }}.direct
+  - name: add to directory
+    zvm_user:
+      name: '{{ name }}'
+      dirfile: /tmp/{{ name }}.direct
+      exists: true
+  - name: clone boot disks
+    zvm_clone_disk:
+      name: '{{ name }}'
+      diskaddr: 201
+      srcname: RHEL81
+      srcaddr: 201
+      diskalloc: AUTOG
+      diskloc: EAVPOOL
+      diskmode: MR
+  - name: add data disk 1
+    zvm_minidisk:
+      name: '{{ name }}'
+      diskaddr: 202
+      disktype: 3390
+      diskalloc: AUTOG
+      diskloc: EAVPOOL
+      diskunits: 1
+      disksize: 10016
+      diskmode: MR
+      diskformat: True
+      exists: True
+  - name: template a network mangle script
+    template: 
+      src: rhel8nw.template.j2
+      dest: /tmp/{{ name }}.sh
+- name: send files and startup
+  collections:
+    - "ibm.zvm_ansible"
+  hosts: newlinuxes
+  ## this section runs serially - that is 1 host at a time
+  ## because we are using the card punch and dont want a 
+  ## race condition as parallel tasks steal it from each other
+  serial: 1
+  tasks: 
+  - name: dump user rdrs
+    zvm_reader_empty: 
+      name: '{{ name }}'
+  - name: send file to user rdrs
+    zvm_fileto_rdr: 
+      name: '{{ name }}'
+      filename: /tmp/{{ name }}.sh
+      asfilename: netsetup.sh
+  - name: startem up
+    zvm_startstop_user:
+      name: '{{ name }}'
+      loggedon: true
+      viaSMAPI: true
+  - name: cleanup dir stubs
+    file:
+      path: /tmp/{{ name }}.direct
+      state: absent
+  - name: cleanup network scripts
+    file:
+      path: /tmp/{{ name }}.sh
+      state: absent
+
+
