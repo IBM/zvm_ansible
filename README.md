@@ -93,6 +93,19 @@ MACH ESA
 IPL 190
 ```
 
+## usage
+
+On the system where you will be running your playbooks:  
+
+1. git clone https://github.com/IBM/zvm_ansible_collection.git
+2. cd zvm_ansible_collection
+3. ansible-galaxy collection build --output-path ..
+4. ansible-galaxy collection install ../ibm-zvm_ansible-V.V.V.tar.gz
+
+The above 'building' nonsense will go away once I'm able to get this collection into shape such that the ansible community will accept it into galaxy - then you just install it directly without having to clone/build first.  
+
+From there you can begin building yourself an inventory.yaml and using our test_*.yaml playbooks as examples to begin building your virtual machines. 
+
 
 ## limitations
 
