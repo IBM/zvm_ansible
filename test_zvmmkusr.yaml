@@ -1,27 +1,29 @@
 - name: makin users
-  hosts: vma
+  collections:
+    - "ibm.zvm_ansible"
+  hosts: zvmhosts
   tasks:
-  - name: run module args 1
+  - name: add a user
     zvm_user:
       name: thingone
       newpass: AUTOONLY
       prototype: LITMSTC
       exists: true
     register: testout 
-  - name: run module args 2
+  - name: add a user with a prototype that does not exist - should fail
     zvm_user:
       name: baddude
       prototype: ISNTONE
       exists: true
     register: test2out 
     ignore_errors: true
-  - name: run module args 3
+  - name: add a user again idemptotently - "user exists" failure is ignored
     zvm_user:
       name: thingone
       prototype: LITMSTC
       exists: true
     register: test3out 
-  - name: resize one
+  - name: resize a user
     zvm_update_user:
       name: thingone
       newpass: letmein
@@ -31,12 +33,14 @@
       mem: 20
       maxmem: 30
       memsuffix: G
-  - name: run module args 4
+  - name: delete a user
     zvm_user:
       name: thingone
       exists: false
     register: test4out 
 - name: making users with dir stubs
+  collections:
+    - "ibm.zvm_ansible"
   hosts: newlinuxes
   tasks: 
   - name: make dir files

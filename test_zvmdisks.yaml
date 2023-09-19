@@ -3,7 +3,7 @@
     - "ibm.zvm_ansible"
   hosts: zvmhosts
   tasks:
-  - name: run adddasd
+  - name: run dasd
     zvm_minidisk:
       name: litstsm
       diskaddr: 2020
@@ -17,7 +17,7 @@
       diskformat: True
       exists: True
     register: testout 
-  - name: run adddasd again should get already exists
+  - name: run dasd again should get already exists
     zvm_minidisk:
       name: litstsm
       diskaddr: 2020
@@ -37,14 +37,14 @@
       srcname: RHEL81
       srcaddr: 201
     register: clonedisk
-  - name: run adddasd delete
+  - name: run dasd delete
     zvm_minidisk:
       name: litstsm
       diskaddr: 2020
       diskwipe: 2
       exists: False
     register: testdel
-  - name: run adddasd delete again should get doesnt exist
+  - name: run dasd delete again should get doesnt exist
     zvm_minidisk:
       name: litstsm
       diskaddr: 2020
@@ -60,3 +60,10 @@
       diskloc: EAVPOOL
       diskmode: MR
     register: clonedisk
+  - name: run dasd delete to cleanup
+    zvm_minidisk:
+      name: litstsm
+      diskaddr: 2020
+      diskwipe: 2
+      exists: False
+    register: lastdel
