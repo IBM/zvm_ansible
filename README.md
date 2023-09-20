@@ -3,7 +3,7 @@ A set of ansible modules, roles, and playbooks for managing z/VM via SMAPI and z
 These modules requre a Linux virtual machine running on the target z/VM LPAR. The Linux target virtual machine must be authorized to issue SMAPI commands. The Linux target virtual machine must have Feilong zthin installed since the modules use the smcli command.  If you are also an IBM Cloud Infrastructure Center user, you can simply use the existing ICIC Compute node that runs on each managed z/VM LPAR. 
 
 ## design
-The modules are currently being developed as an ansible collection at https://github.ibm.com/rjbrenn/zvm_ansible_collection  
+The modules are currently being developed as an ansible collection at https://github.com/IBM/zvm_ansible_collection
 Our objective is to get these added to ansible galaxy as official modules at some point - this repo of playbooks, roles, and examples will be expanded as we add function to the collection. 
 
 
