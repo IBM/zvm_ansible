@@ -37,7 +37,7 @@ Our Linux MAP systems have z/VM class D in addition to G so that they can manage
 
 Our z/VM SYSTEM CONFIG has the following to set up privclass T
 
-    MODIFY CMD XAUTOLOG             IBMCLASS A PRIVCLAS AT
+    MODIFY CMD XAUTOLOG             IBMCLASS B PRIVCLAS BT
     MODIFY CMD FORCE                IBMCLASS A PRIVCLAS AT
 
 The combination of classes DGT for our MAP Linux systems gives them the z/VM system privileges required for our modules to do their thing. We also enable the LNKNOPAS option so we can optionally dasdfmt new minidisks as they are created by attaching them to the MAP Linux system and running dasdfmt as part of the module action. 
