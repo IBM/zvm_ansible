@@ -20,6 +20,7 @@ You can create a group of linux virtual machines using the following flow:
 - Adjust the settings of the above virtual machines as desired using `zvm_update_user.py`
 - Create a set of new empty disks of various sizes for the above virtual machines using `zvm_minidisk.py`
   - or: Clone an existing gold image into the above virtual machines using `zvm_clone_disk.py`  
+- Dedicate a DASD volume or a FCP device to the virtual machine using `zvm_dedicate_dev.py`
 - Direct the new virtual machines to empty their virtual RDR with `zvm_reader_empty.py`  
 - Send new network firstboot scripts to the new virtual machines RDRs with `zvm_fileto_reader.py`  
 - Start the new virtual machines up with `zvm_startstop_user.py`
