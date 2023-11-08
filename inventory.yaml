@@ -29,6 +29,7 @@ all:
                     topcpu: 1 
                     nicdev: "500"
                     ipaddr: 1.2.3.4
+                    realdedv: 4806
                 jtu0001.fpet.pokprv.stglabs.ibm.com:
                     ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
                     ansible_user: root 
@@ -39,6 +40,7 @@ all:
                     sbymem: 31
                     topcpu: 3
                     ipaddr: 1.2.3.5
+                    realdedv: 4807
                 jtu0002.fpet.pokprv.stglabs.ibm.com:
                     ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
                     ansible_user: root
@@ -49,3 +51,4 @@ all:
                     sbymem: 6
                     topcpu: 7
                     ipaddr: 1.2.3.6
+                    realdedv: 4808

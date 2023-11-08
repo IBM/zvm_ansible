@@ -1,0 +1,27 @@
+- name: play with dedicating devices
+  collections:
+    - "ibm.zvm_ansible"
+  hosts: newlinuxes
+  tasks:
+  - name: add a dasd vol
+    zvm_dedicate_dev:
+      name: '{{ name }}'
+      virtaddr: 999
+      realaddr: '{{ realdedv }}'
+      exists: true
+  - name: add a dasd vol again
+    zvm_dedicate_dev:
+      name: '{{ name }}'
+      virtaddr: 999
+      realaddr: '{{ realdedv }}'
+      exists: true
+  - name: del a dasd vol
+    zvm_dedicate_dev:
+      name: '{{ name }}'
+      virtaddr: 999
+      exists: false
+  - name: del a dasd vol again
+    zvm_dedicate_dev:
+      name: '{{ name }}'
+      virtaddr: 999
+      exists: false
