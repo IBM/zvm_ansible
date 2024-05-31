@@ -14,12 +14,12 @@ all:
     children:
         zvmhosts:      
             hosts: 
-                mapvma.fpet.pokprv.stglabs.ibm.com:
+                cic2cvma.fpet.pokprv.stglabs.ibm.com:
                     ansible_user: root
         newlinuxes:
             hosts:
                 jtu0000.fpet.pokprv.stglabs.ibm.com:
-                    ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
+                    ansible_host: cic2cvma.fpet.pokprv.stglabs.ibm.com
                     ansible_user: root 
                     name: jtu000 
                     newpass: autoonly 
@@ -31,7 +31,7 @@ all:
                     ipaddr: 1.2.3.4
                     realdedv: 4806
                 jtu0001.fpet.pokprv.stglabs.ibm.com:
-                    ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
+                    ansible_host: cic2cvma.fpet.pokprv.stglabs.ibm.com
                     ansible_user: root 
                     name: jtu001
                     newpass: autoonly
@@ -42,7 +42,7 @@ all:
                     ipaddr: 1.2.3.5
                     realdedv: 4807
                 jtu0002.fpet.pokprv.stglabs.ibm.com:
-                    ansible_host: mapvma.fpet.pokprv.stglabs.ibm.com
+                    ansible_host: cic2cvma.fpet.pokprv.stglabs.ibm.com
                     ansible_user: root
                     name: jtu002
                     newpass: autoonly

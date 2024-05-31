@@ -15,6 +15,12 @@
       loggedon: false
       viaSMAPI: false
       stoptime: 3
+  - name: killem again again via SMAPI to verify idempotency
+    zvm_startstop_user:
+      name: '{{ name }}'
+      loggedon: false
+      viaSMAPI: true
+    ignore_errors: true
   - name: del from directory
     zvm_user:
       name: '{{ name }}'

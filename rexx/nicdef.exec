@@ -1,0 +1,73 @@
+/* NICDEF   EXEC                                                      */
+/* takes SMAPI command input and runs it as a dirmaint nicdef         */
+/* command                                                            */
+ 
+Address 'COMMAND'
+ 
+/* grab first two parameters off input argument */
+parse arg authenticatedUserid, targetIdentifier, inParms
+ 
+/* Translate ASCII to EBCDIC */
+'PIPE VAR INPARMS|XLATE FROM 437 TO 37|VAR INPARMS'
+ 
+say "Performing NICDEF for user "targetIdentifier
+say "  using parms >>"inParms"<<"
+say "  checking for | or # characters"
+ 
+/* we explicitly search the parm string for | or # characters
+ * because a | can cause the PIPE command below to parse the
+ * rest of the parms as additional PIPE stages which in turn opens
+ * the opportunity to build a command and then pass it to a CP stage
+ * which is Not Ok
+ */
+ 
+pipeloc  = INDEX(inParms, "|")
+hashloc  = INDEX(inParms, "#")
+ 
+ 
+IF pipeloc  > 0  THEN
+DO
+  say "found a | at "pipeloc", terminating"
+  exit 99
+END
+IF hashloc  > 0  THEN
+DO
+  say "found a # at "hashloc", terminating"
+  exit 99
+END
+ 
+ command = "DIRMSAPI FOR "targetIdentifier" NICDEF "inParms
+ 
+say "Command ="command
+cmsresp = ""
+ 
+/* 'EXEC 'command */
+'PIPE CMS 'command' | STEM CMSOUT.'
+ 
+if rc = 0 then
+do
+ 
+   returnCode = 0
+   returnCode = d2c(returnCode, 4)
+end
+else
+do
+   returnCode = 397
+   returnCode = d2c(returnCode, 4)
+end
+ 
+reasonCode = rc
+reasonCode = d2c(reasonCode, 4)
+ 
+DO i=1 to CMSOUT.0
+   say CMSOUT.i
+   'PIPE VAR CMSOUT.I | XLATE FROM 37 TO 437 | VAR CMSOUTA'
+   cmsresp = cmsresp || d2c( length(cmsouta), 4) || cmsouta
+END
+ 
+cmsresp = d2c(CMSOUT.0, 4) || cmsresp
+ 
+outParms = returnCode || reasonCode || cmsresp
+exit outParms
+ 
+ 

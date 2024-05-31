@@ -1,0 +1,40 @@
+- name: play with nicdef
+  collections:
+    - "ibm.zvm_ansible"
+  hosts: newlinuxes
+  tasks:
+  - name: make them
+    zvm_dirm_nicdef:
+      name: '{{ name }}'
+      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      port: 44444
+      authuser: mapauth
+      authpass: '{{ mappassw }}'
+      devno: 888
+      nictype: QDIO
+      lanname: 9DOTLAN2
+      vlanid: 2230
+      exists: true
+    ignore_errors: true
+  - name: make them again
+    zvm_dirm_nicdef:
+      name: '{{ name }}'
+      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      port: 44444
+      authuser: mapauth
+      authpass: '{{ mappassw }}'
+      devno: 888
+      nictype: QDIO
+      lanname: 9DOTLAN2
+      vlanid: 2230
+      exists: true
+    ignore_errors: true
+  - name: make them
+    zvm_dirm_nicdef:
+      name: '{{ name }}'
+      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      port: 44444
+      authuser: mapauth
+      authpass: '{{ mappassw }}'
+      devno: 888
+      exists: false

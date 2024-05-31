@@ -1,0 +1,81 @@
+/* SETSHARE EXEC                                                      */
+/* takes SMAPI command input and runs it as a cp set share            */
+/* command                                                            */
+ 
+Address 'COMMAND'
+ 
+/* grab first two parameters off input argument */
+parse arg authenticatedUserid, targetIdentifier, inParms
+ 
+/* Translate ASCII to EBCDIC */
+'PIPE VAR INPARMS|XLATE FROM 437 TO 37|VAR INPARMS'
+ 
+say "Performing CP SET SHARE for user "targetIdentifier
+say "  using parms >>"inParms"<<"
+say "  checking for | or # characters"
+ 
+/* we explicitly search the parm string for | or # characters
+ * because a | can cause the PIPE command below to parse the
+ * rest of the parms as additional PIPE stages which in turn opens
+ * the opportunity to build a command and then pass it to a CP stage
+ * which is Not Ok
+ */
+ 
+pipeloc  = INDEX(inParms, "|")
+hashloc  = INDEX(inParms, "#")
+ 
+ 
+IF pipeloc  > 0  THEN
+DO
+  say "found a | at "pipeloc", terminating"
+  exit 99
+END
+IF hashloc  > 0  THEN
+DO
+  say "found a # at "hashloc", terminating"
+  exit 99
+END
+ 
+ command = "SET SHARE "targetIdentifier" "inParms
+ 
+say "Command ="command
+cpresp = ""
+ 
+/* by default, VSMWORK1 has D8ONECMD set so it will not accept
+ * stacked CP commands.
+ * additionally, translating from CP 437 to CP 37 does not provide
+ * a path to generate x'15' the NL character which can be used in CP
+ * calls to stack CP commands.
+ * adding a # to the command generates a syntax error.
+ */
+ 
+'PIPE CP 'command' | STEM CPOUT.'
+ 
+ 
+if rc = 0 then
+do
+ 
+   returnCode = 0
+   returnCode = d2c(returnCode, 4)
+end
+else
+do
+   returnCode = 397
+   returnCode = d2c(returnCode, 4)
+end
+ 
+reasonCode = rc
+reasonCode = d2c(reasonCode, 4)
+ 
+DO i=1 to CPOUT.0
+   say CPOUT.i
+   'PIPE VAR CPOUT.I | XLATE E2A | VAR CPOUTA'
+   cpresp = cpresp || d2c( length(cpouta), 4) || cpouta
+END
+ 
+cpresp = d2c( CPOUT.0, 4) || cpresp
+ 
+outParms = returnCode || reasonCode || cpresp
+exit outParms
+ 
+ 

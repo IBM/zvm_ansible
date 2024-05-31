@@ -59,6 +59,11 @@
       name: '{{ name }}'
       loggedon: true
       viaSMAPI: true
+  - name: startem up again
+    zvm_startstop_user:
+      name: '{{ name }}'
+      loggedon: true
+      viaSMAPI: false
   - name: cleanup dir stubs
     file:
       path: /tmp/{{ name }}.direct
