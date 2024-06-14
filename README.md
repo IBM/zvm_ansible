@@ -7,23 +7,26 @@ The modules are currently being developed as an ansible collection at https://gi
 Our objective is to get these added to ansible galaxy as official modules at some point - this repo of playbooks, roles, and examples will be expanded as we add function to the collection. 
 
 
-They are kinda a 1:1 wrapper around a pair of create/delete SMAPI calls or virtual RDR management commands. 
+For the ones which use system SMAPI calls they are kinda a 1:1 wrapper around a pair of create/delete SMAPI calls or virtual RDR management commands. 
+For the ones which use locally developed SMAPI extensions they are just a method to call that custom function, whatever it does. 
 
 You'll end up with a configuration that looks like this: 
 ![diagram of ansible call path to zvm smapi](/docs/zvm_ansible.png)
 
 When you run the ansible playbooks the rendered python will get pushed to a Linux machine running in the target z/VM partition. The python runs there in that target Linux machine, and in turn uses smcli commands to talk to the SMAPI subsystem in z/VM. Since we are running our rendered python on something other than the desired resultant Linux Virtual Machine in z/VM we use the `ansible_host` to direct ansible to run our modules on that Linux management system.  
 
-You can create a group of linux virtual machines using the following flow:
+You can create and manage a group of linux virtual machines using the following flow:
 
 - Create a set of new virtual machines using `zvm_user.py`  
-- Adjust the settings of the above virtual machines as desired using `zvm_update_user.py`
-- Create a set of new empty disks of various sizes for the above virtual machines using `zvm_minidisk.py`
+- Adjust the settings of the above virtual machines as desired using `zvm_update_user.py`  
+- Add a NICDEF statement with embedded VLAN <vlan-list> to the above virtual machines using `zvm_dirm_nicdef.py`  
+- Create a set of new empty disks of various sizes for the above virtual machines using `zvm_minidisk.py`  
   - or: Clone an existing gold image into the above virtual machines using `zvm_clone_disk.py`  
 - Dedicate a DASD volume or a FCP device to the virtual machine using `zvm_dedicate_dev.py`
 - Direct the new virtual machines to empty their virtual RDR with `zvm_reader_empty.py`  
 - Send new network firstboot scripts to the new virtual machines RDRs with `zvm_fileto_reader.py`  
-- Start the new virtual machines up with `zvm_startstop_user.py`
+- Start the new virtual machines up with `zvm_startstop_user.py`  
+- Change the relative or abolute share of existing virtual machines with `zvm_setshare.py`
 
 Its also possible to spawn openshift clusters using the above overall approach. 
 
@@ -94,6 +97,60 @@ MACH ESA
 IPL 190
 ```
 
+### SSL Setup for TCP calls to SMAPI
+
+If you're going to use the supplied zvm_setshare and zvm_dirm_nicdef modules to call custom SMAPI extensions, be aware that those modules use TCP connectivity to SMAPI and pass userids and passwords over the wire for authorization. As such you must enable SSL on the z/VM stack, and configure that additional z/VM Userid for access to SMAPI similar to what you had to do above for MAPVM. You could also just use the MAPVM userid and password, but its not best practice for a Linux virtual machine to have a password set.  
+
+Assuming you have already fully SSL enabled your z/VM TN3270 service, you can just make this additional change to SSL protect your SMAPI TCP port. In your TCPIP PROFILE's PORT section you need a statement similar to the following. You can reuse the same SSL Cert you use for TN3270 if the SMAPI services are listening on the same hostname.domain which matches the CN for the TN3270 certificate: 
+```
+  44444 TCP VSMREQIN SECURE VMCCERT ; SSL Protected SMAPI
+```
+
+ref: https://www.ibm.com/docs/en/zvm/7.3?topic=server-port-statement
+
+### Installing local extensions to SMAPI 
+
+Copy the REXX execs to the MAINT user's 193 disk. For example copy rexx/nicdef.exec and rexx/setshare.exec as text/ascii and they'll show up like so in flist: 
+
+```
+NICDEF   EXEC     O1           V         72         73          1  5/31/24 11:17
+SETSHARE EXEC     O1           V         72         81          1  5/31/24 10:59
+```
+
+Then modify DMSSIUSR NAMES on MAINT 193 to add statements to the end of the file which tell SMAPI about your local extensions and how you'll be calling them: 
+
+```
+:nick.Dirm_Nicdef           
+:program.NICDEF             
+                            
+:nick.Cp_SetShare           
+:program.SETSHARE           
+                            
+```
+
+Detach MAINT 193 , and then force and xautolog VSMGUARD to restart SMAPI: 
+
+```
+det 193
+DASD 0193 DETACHED
+Ready; T=0.01/0.01 15:03:06
+
+force VSMGUARD
+USER DSC   LOGOFF AS  VSMGUARD USERS = 66    FORCED BY RJBRENN
+Ready; T=0.01/0.01 15:03:13
+
+xautolog VSMGUARD
+ ICH70001I VSMGUARD LAST ACCESS AT 17:25:52 ON TUESDAY, JUNE 11, 2024
+Command accepted
+Ready; T=0.01/0.01 15:03:17
+AUTO LOGON  ***       VSMGUARD USERS = 67
+HCPCLS6056I XAUTOLOG information for VSMGUARD: The IPL command is verified by th
+e IPL command processor.
+```
+
+ref: https://www.ibm.com/docs/en/zvm/7.3?topic=programming-creating-custom-apis
+
+
 ## usage
 
 On the system where you will be running your playbooks:  
@@ -111,6 +168,7 @@ From there you can begin building yourself an inventory.yaml and using our test_
 ## limitations
 
 SMAPI does not provide an API to manage the vlan tag of a NICDEF statement.  
+  We supply a local exec that enables this now: NICDEF EXEC called by zvm_dirm_nicdef.py!
 SMAPI does not provide an API to manage CRYPTO statements for APVIRT or to Dedicate a domain. 
 
 due to the above we have to either:  

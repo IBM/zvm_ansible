@@ -6,7 +6,7 @@
   - name: make them
     zvm_dirm_nicdef:
       name: '{{ name }}'
-      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      zvmhost: 'lticvmc.example.net'
       port: 44444
       authuser: mapauth
       authpass: '{{ mappassw }}'
@@ -19,7 +19,7 @@
   - name: make them again
     zvm_dirm_nicdef:
       name: '{{ name }}'
-      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      zvmhost: 'lticvmc.example.net'
       port: 44444
       authuser: mapauth
       authpass: '{{ mappassw }}'
@@ -29,10 +29,10 @@
       vlanid: 2230
       exists: true
     ignore_errors: true
-  - name: make them
+  - name: unmake them
     zvm_dirm_nicdef:
       name: '{{ name }}'
-      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      zvmhost: 'lticvmc.example.net'
       port: 44444
       authuser: mapauth
       authpass: '{{ mappassw }}'

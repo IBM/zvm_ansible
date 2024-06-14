@@ -1,4 +1,4 @@
-- name: play with dedicating devices
+- name: play with changing share
   collections:
     - "ibm.zvm_ansible"
   hosts: newlinuxes
@@ -6,7 +6,7 @@
   - name: high prio
     zvm_setshare:
       name: '{{ name }}'
-      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      zvmhost: 'lticvmc.example.net'
       port: 44444
       authuser: mapauth
       authpass: '{{ mappassw }}'
@@ -15,7 +15,7 @@
   - name: higher prio
     zvm_setshare:
       name: '{{ name }}'
-      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      zvmhost: 'lticvmc.example.net'
       port: 44444
       authuser: mapauth
       authpass: '{{ mappassw }}'
@@ -24,7 +24,7 @@
   - name: low prio
     zvm_setshare:
       name: '{{ name }}'
-      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      zvmhost: 'lticvmc.example.net'
       port: 44444
       authuser: mapauth
       authpass: '{{ mappassw }}'
@@ -33,7 +33,7 @@
   - name: abs prio
     zvm_setshare:
       name: '{{ name }}'
-      zvmhost: 'lticvmc.pok.stglabs.ibm.com'
+      zvmhost: 'lticvmc.example.net'
       port: 44444
       authuser: mapauth
       authpass: '{{ mappassw }}'
