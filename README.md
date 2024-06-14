@@ -168,7 +168,7 @@ From there you can begin building yourself an inventory.yaml and using our test_
 ## limitations
 
 SMAPI does not provide an API to manage the vlan tag of a NICDEF statement.  
-  We supply a local exec that enables this now: NICDEF EXEC called by zvm_dirm_nicdef.py!
+  - We supply a local exec that enables this now: NICDEF EXEC called by zvm_dirm_nicdef.py!
 SMAPI does not provide an API to manage CRYPTO statements for APVIRT or to Dedicate a domain. 
 
 due to the above we have to either:  
